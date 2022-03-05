@@ -16,7 +16,8 @@ from sklearn.metrics import r2_score
 import pickle
 
 def main():
-    st.title("Streamlit Tutorial")
+    st.title("All in one ML")
+    st.text("This app will help in Preprocessing, Model Building and App Creation")
 
     # Sidebar in streamlit with the following choices: Preprocessing, Pickling.
     choice = st.sidebar.selectbox("Select a page", ["Preprocessing", "Pickling"])
