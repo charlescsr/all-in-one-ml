@@ -64,6 +64,9 @@ def main():
         file = st.file_uploader("Upload a file", type=["csv"])
 
         if file is not None:
+            df = pd.read_csv(file)
+            st.dataframe(df)
+
             model = st.selectbox("Select model", ["", "Linear Regression", "Decision Tree Regressor", "Random Forest Regressor", "Logistic Regression", "SVM", "KNN", "Decision Tree Classifier", "Random Forest Classifier"])
 
             if model == "Linear Regression":
@@ -103,6 +106,279 @@ def main():
 
                 # Pickle
                 pickle.dump(regressor, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "Decision Tree Regressor":
+                st.write("Decision Tree Regressor")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                regressor = DecisionTreeRegressor()
+                regressor.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = regressor.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", regressor.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(regressor, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "Random Forest Regressor":
+                st.write("Random Forest Regressor")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                regressor = RandomForestRegressor()
+                regressor.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = regressor.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", regressor.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(regressor, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "Logistic Regression":
+                st.write("Logistic Regression")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                regressor = LogisticRegression()
+                regressor.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = regressor.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", regressor.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(regressor, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "SVM":
+                st.write("SVM")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                regressor = SVR()
+                regressor.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = regressor.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", regressor.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(regressor, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "KNN":
+                st.write("KNN")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                classifier = KNeighborsClassifier()
+                classifier.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = classifier.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", classifier.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(classifier, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "Decision Tree Classifier":
+                st.write("Decision Tree Classifier")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                classifier = DecisionTreeClassifier()
+                classifier.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = classifier.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", classifier.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(classifier, open("model.pkl", "wb"))
+                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "Random Forest Classifier":
+                st.write("Random Forest Classifier")
+                st.write("This is the page to pickle the model.")
+
+                df = pd.read_csv(file)
+                st.dataframe(df)
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Model
+                classifier = RandomForestClassifier()
+                classifier.fit(X_train, y_train)
+
+                # Prediction
+                y_pred = classifier.predict(X_test)
+                st.write("Prediction: ", y_pred)
+
+                # Accuracy
+                st.write("Accuracy: ", classifier.score(X_test, y_test))
+
+                # MSE
+                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+
+                # R2
+                st.write("R2: ", r2_score(y_test, y_pred))
+
+                # Pickle
+                pickle.dump(classifier, open("model.pkl", "wb"))
                 st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
                 
