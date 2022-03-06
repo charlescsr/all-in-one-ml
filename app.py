@@ -30,6 +30,10 @@ def main():
         file = st.file_uploader("Upload a file", type=["csv"])
         if file is not None:
             df = pd.read_csv(file)
+
+            if any(df.columns.str.contains('^Unnamed')):
+                df = pd.read_csv(file, index_col=0)
+
             st.dataframe(df)
 
             # Column list
@@ -65,6 +69,10 @@ def main():
 
         if file is not None:
             df = pd.read_csv(file)
+
+            if any(df.columns.str.contains('^Unnamed')):
+                df = pd.read_csv(file, index_col=0)
+
             st.dataframe(df)
 
             model = st.selectbox("Select model", ["", "Linear Regression", "Decision Tree Regressor", "Random Forest Regressor", "Logistic Regression", "SVM", "KNN", "Decision Tree Classifier", "Random Forest Classifier"])
@@ -72,9 +80,6 @@ def main():
             if model == "Linear Regression":
                 st.write("Linear Regression")
                 st.write("This is the page to pickle the model.")
-
-                df = pd.read_csv(file)
-                st.dataframe(df)
 
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
@@ -112,9 +117,6 @@ def main():
                 st.write("Decision Tree Regressor")
                 st.write("This is the page to pickle the model.")
 
-                df = pd.read_csv(file)
-                st.dataframe(df)
-
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
 
@@ -150,9 +152,6 @@ def main():
             elif model == "Random Forest Regressor":
                 st.write("Random Forest Regressor")
                 st.write("This is the page to pickle the model.")
-
-                df = pd.read_csv(file)
-                st.dataframe(df)
 
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
@@ -190,9 +189,6 @@ def main():
                 st.write("Logistic Regression")
                 st.write("This is the page to pickle the model.")
 
-                df = pd.read_csv(file)
-                st.dataframe(df)
-
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
 
@@ -228,9 +224,6 @@ def main():
             elif model == "SVM":
                 st.write("SVM")
                 st.write("This is the page to pickle the model.")
-
-                df = pd.read_csv(file)
-                st.dataframe(df)
 
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
@@ -268,9 +261,6 @@ def main():
                 st.write("KNN")
                 st.write("This is the page to pickle the model.")
 
-                df = pd.read_csv(file)
-                st.dataframe(df)
-
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
 
@@ -307,9 +297,6 @@ def main():
                 st.write("Decision Tree Classifier")
                 st.write("This is the page to pickle the model.")
 
-                df = pd.read_csv(file)
-                st.dataframe(df)
-
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
 
@@ -345,9 +332,6 @@ def main():
             elif model == "Random Forest Classifier":
                 st.write("Random Forest Classifier")
                 st.write("This is the page to pickle the model.")
-
-                df = pd.read_csv(file)
-                st.dataframe(df)
 
                 # Target column
                 target_column = st.selectbox("Select target column", df.columns)
