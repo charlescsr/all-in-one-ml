@@ -81,7 +81,7 @@ def main():
                 y = df[target_column]
 
                 # Train test split slider
-                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.2)
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
                 # Model
