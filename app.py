@@ -92,8 +92,36 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize Linear Regressor Object in Sklearn
+                # Defaults: fit_intercept=True, copy_X=True, n_jobs=None, positive=False
+                fit_intercept_checkbox = st.checkbox("Fit intercept")
+                copy_X_checkbox = st.checkbox("Copy X")
+                n_jobs_slider = st.slider("Select number of jobs", 1, 10, 1)
+                positive_checkbox = st.checkbox("Positive")
+
+                fit_intercept = True
+                copy_X = True
+                n_jobs = None
+                positive = False
+
+
+                if not fit_intercept_checkbox:
+                    fit_intercept = False
+
+                if not copy_X_checkbox:
+                    copy_X = True
+
+                if positive_checkbox:
+                    positive = True
+
+                if n_jobs_slider == 1:
+                    n_jobs = None
+
+                else:
+                    n_jobs = n_jobs_slider
+
                 # Model
-                regressor = LinearRegression()
+                regressor = LinearRegression(fit_intercept=fit_intercept, copy_X=copy_X, n_jobs=n_jobs, positive=positive)
                 regressor.fit(X_train, y_train)
 
                 # Prediction
@@ -128,6 +156,14 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize Decision Tree Regressor Object in Sklearn
+                # Defaults: criterion='squared_error', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None
+                criterion_selectbox = st.selectbox("Select criterion", ["", "absolute_error", "friedman_mse", "poisson"])
+                
+                
+                
+                
+                
                 # Model
                 regressor = DecisionTreeRegressor()
                 regressor.fit(X_train, y_train)
