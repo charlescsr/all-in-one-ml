@@ -17,7 +17,7 @@ import pickle
 
 def main():
     st.title("All in one ML")
-    st.text("This app will help in Preprocessing, Model Building and App Creation")
+    st.text("This app will help in Preprocessing and Model Building")
 
     # Sidebar in streamlit with the following choices: Preprocessing, Pickling.
     choice = st.sidebar.selectbox("Select a page", ["Preprocessing", "Pickling"])
@@ -157,15 +157,20 @@ def main():
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
                 # Options to customize Decision Tree Regressor Object in Sklearn
-                # Defaults: criterion='squared_error', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=None
-                criterion_selectbox = st.selectbox("Select criterion", ["", "absolute_error", "friedman_mse", "poisson"])
+                # Defaults: criterion='squared_error', splitter='best', max_depth=None, min_samples_split=2, min_samples_leaf=1
+                criterion_selectbox = st.selectbox("Select criterion", ["squared_error", "absolute_error", "friedman_mse", "poisson"])
                 
+                splitter_selectbox = st.selectbox("Select splitter", ["best", "random"])
+
+                max_depth_slider = st.slider("Select max depth", 1, 10, 1)
+
+                min_samples_split_slider = st.slider("Select min samples split", 1, 10, 1)
+
+                min_samples_leaf_slider = st.slider("Select min samples leaf", 1, 10, 1)
                 
-                
-                
-                
+
                 # Model
-                regressor = DecisionTreeRegressor()
+                regressor = DecisionTreeRegressor(criterion=criterion_selectbox, splitter=splitter_selectbox, max_depth=max_depth_slider, min_samples_split=min_samples_split_slider, min_samples_leaf=min_samples_leaf_slider)
                 regressor.fit(X_train, y_train)
 
                 # Prediction
