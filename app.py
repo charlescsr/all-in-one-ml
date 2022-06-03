@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import r2_score
@@ -24,7 +24,7 @@ def main():
     st.text("This app will help in Preprocessing and Model Building")
 
     # Sidebar in streamlit with the following choices: Preprocessing, Pickling.
-    choice = st.sidebar.selectbox("Select a page", ["Preprocessing", "Pickling"])
+    choice = st.sidebar.selectbox("Select a page", ["Preprocessing", "Pickling", "Cross Validation"])
 
     if choice == "Preprocessing":
         st.subheader("Preprocessing Page")
@@ -490,8 +490,61 @@ def main():
                 # Pickle
                 pickle.dump(classifier, open("model.pkl", "wb"))
                 st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+    
+    elif choice == "Cross Validation":
+        # 2 fields: One to upload model and one to upload data
+        st.write("Cross Validation")
+        st.write("This is the page to perform cross validation of the given model.")
 
-                
+        # Upload model
+        uploaded_file = st.file_uploader("Upload pickled model", type=["pickle", "pkl"])
+
+        if uploaded_file is not None:
+            with open(uploaded_file, "rb") as f:
+                classifier = pickle.load(f)
+
+        # Upload data
+        uploaded_file = st.file_uploader("Upload data", type=["csv"])
+
+        if uploaded_file is not None:
+            df = pd.read_csv(uploaded_file)
+            st.write(df)
+
+        # Target column
+        target_column = st.selectbox("Select target column", df.columns)
+
+        # Model
+        X = df.drop(target_column, axis=1)
+        y = df[target_column]
+
+        # Cross validation
+        # Choice of Fold method
+        fold_method_selectbox = st.selectbox("Select fold method", ["", "KFold", "StratifiedKFold"])
+
+        # Choice of K
+        k_slider = st.slider("Select k", 1, 10, 1)
+
+        # Choice of shuffle
+        shuffle_selectbox = st.selectbox("Select shuffle", ["True", "False"])
+        shuffle_selectbox = bool(shuffle_selectbox)
+
+        # Choice of random state
+        random_state_slider = st.number_input("Select random state", value=42)
+
+        # Cross validation
+        if fold_method_selectbox == "KFold":
+            cv = KFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
+
+        elif fold_method_selectbox == "StratifiedKFold":
+            cv = StratifiedKFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
+
+        # Cross val score
+        cross = cross_val_score(classifier, X, y, cv=cv)
+
+        # Display max accuracy, min and avg accuracy
+        st.write("Max accuracy: ", cross.max() * 100)
+        st.write("Min accuracy: ", cross.min() * 100)
+        st.write("Avg accuracy: ", cross.mean() * 100)
 
 
 if __name__ == "__main__":
