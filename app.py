@@ -457,8 +457,20 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize Random Forest Classifier Object in Sklearn
+                # Defaults: n_estimators=100, max_features='sqrt', criterion='gini', max_depth=None
+                n_estimators_slider = st.slider("Select n_estimators", 1, 100, 1)
+                n_estimators_slider = int(n_estimators_slider)
+
+                max_features_selectbox = st.selectbox("Select max features", ["sqrt", "log2", "auto"])
+
+                criterion_selectbox = st.selectbox("Select criterion", ["gini", "entropy"])
+
+                max_depth_slider = st.slider("Select max depth", 1, 10, 1)
+                max_depth_slider = int(max_depth_slider) 
+                
                 # Model
-                classifier = RandomForestClassifier()
+                classifier = RandomForestClassifier(n_estimators=n_estimators_slider, max_features=max_features_selectbox, criterion=criterion_selectbox, max_depth=max_depth_slider)
                 classifier.fit(X_train, y_train)
 
                 # Prediction
@@ -468,11 +480,12 @@ def main():
                 # Accuracy
                 st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                # Confusion matrix
+                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                # Classification report
+                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                st.dataframe(classification_report_df)
 
                 # Pickle
                 pickle.dump(classifier, open("model.pkl", "wb"))
