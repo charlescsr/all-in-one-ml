@@ -133,7 +133,7 @@ def main():
                 st.write("Prediction: ", y_pred)
 
                 # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test))
+                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
@@ -185,7 +185,7 @@ def main():
                 st.write("Prediction: ", y_pred)
 
                 # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test))
+                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
@@ -224,7 +224,7 @@ def main():
                 st.write("Prediction: ", y_pred)
 
                 # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test))
+                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
@@ -279,7 +279,7 @@ def main():
                     st.write("Prediction: ", y_pred)
 
                     # Accuracy score
-                    st.write("Accuracy: ", regressor.score(X_test, y_test))
+                    st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
                     # Confusion matrix
                     st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
@@ -337,7 +337,7 @@ def main():
                 st.write("Prediction: ", y_pred)
 
                 # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test))
+                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
                 # Confusion matrix
                 st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
@@ -500,8 +500,8 @@ def main():
         uploaded_file = st.file_uploader("Upload pickled model", type=["pickle", "pkl"])
 
         if uploaded_file is not None:
-            with open(uploaded_file, "rb") as f:
-                classifier = pickle.load(f)
+            pkl = uploaded_file.getvalue()
+            model = pickle.loads(pkl)
 
         # Upload data
         uploaded_file = st.file_uploader("Upload data", type=["csv"])
@@ -510,41 +510,42 @@ def main():
             df = pd.read_csv(uploaded_file)
             st.write(df)
 
-        # Target column
-        target_column = st.selectbox("Select target column", df.columns)
+            # Target column
+            target_column = st.selectbox("Select target column", df.columns)
 
-        # Model
-        X = df.drop(target_column, axis=1)
-        y = df[target_column]
+            # Model
+            X = df.drop(target_column, axis=1)
+            y = df[target_column]
 
-        # Cross validation
-        # Choice of Fold method
-        fold_method_selectbox = st.selectbox("Select fold method", ["", "KFold", "StratifiedKFold"])
+            # Cross validation
+            # Choice of Fold method
+            fold_method_selectbox = st.selectbox("Select fold method", ["", "KFold", "StratifiedKFold"])
 
-        # Choice of K
-        k_slider = st.slider("Select k", 1, 10, 1)
+            # Choice of K
+            k_slider = st.slider("Select k", 1, 10, 1)
 
-        # Choice of shuffle
-        shuffle_selectbox = st.selectbox("Select shuffle", ["True", "False"])
-        shuffle_selectbox = bool(shuffle_selectbox)
+            # Choice of shuffle
+            shuffle_selectbox = st.selectbox("Select shuffle", ["True", "False"])
+            shuffle_selectbox = bool(shuffle_selectbox)
 
-        # Choice of random state
-        random_state_slider = st.number_input("Select random state", value=42)
+            # Choice of random state
+            random_state_slider = st.number_input("Select random state", value=42)
 
-        # Cross validation
-        if fold_method_selectbox == "KFold":
-            cv = KFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
+            # Cross validation
+            if fold_method_selectbox == "KFold":
+                cv = KFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
 
-        elif fold_method_selectbox == "StratifiedKFold":
-            cv = StratifiedKFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
+            elif fold_method_selectbox == "StratifiedKFold":
+                cv = StratifiedKFold(n_splits=k_slider, shuffle=shuffle_selectbox, random_state=random_state_slider)
 
-        # Cross val score
-        cross = cross_val_score(classifier, X, y, cv=cv)
+            # Cross val score
+            if st.button("Cross Validate"):
+                cross = cross_val_score(model, X, y, cv=cv)
 
-        # Display max accuracy, min and avg accuracy
-        st.write("Max accuracy: ", cross.max() * 100)
-        st.write("Min accuracy: ", cross.min() * 100)
-        st.write("Avg accuracy: ", cross.mean() * 100)
+                # Display max accuracy, min and avg accuracy
+                st.write("Max accuracy: ", cross.max() * 100)
+                st.write("Min accuracy: ", cross.min() * 100)
+                st.write("Avg accuracy: ", cross.mean() * 100)
 
 
 if __name__ == "__main__":
