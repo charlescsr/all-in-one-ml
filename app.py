@@ -11,7 +11,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import r2_score
 import pickle
 
@@ -134,6 +138,9 @@ def main():
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
+                # RMSE
+                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+
                 # R2
                 st.write("R2: ", r2_score(y_test, y_pred))
 
@@ -183,6 +190,9 @@ def main():
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
+                # RMSE
+                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+
                 # R2
                 st.write("R2: ", r2_score(y_test, y_pred))
 
@@ -219,6 +229,9 @@ def main():
                 # MSE
                 st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
+                # RMSE
+                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+
                 # R2
                 st.write("R2: ", r2_score(y_test, y_pred))
 
@@ -241,26 +254,43 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize Logistic Regression Object in Sklearn
+                # Defaults: penalty='l2', C=1.0, fit_intercept=True, solver='liblinear', max_iter=100
+                penalty_selectbox = st.selectbox("Select penalty", ["l1", "l2"])
+
+                C_slider = st.slider("Select C", 1, 10, 1)
+                C_slider = float(C_slider)
+
+                fit_intercept_checkbox = st.checkbox("Select fit intercept")
+                fit_intercept_checkbox = bool(fit_intercept_checkbox)
+
+                solver_selectbox = st.selectbox("Select solver", ["newton-cg", "lbfgs", "liblinear", "sag", "saga"])
+
+                max_iter_slider = st.slider("Select max iter", 1, 100, 1)
+
+
                 # Model
-                regressor = LogisticRegression()
-                regressor.fit(X_train, y_train)
+                if st.button("Train"):
+                    regressor = LogisticRegression(penalty=penalty_selectbox, C=C_slider, fit_intercept=fit_intercept_checkbox, solver=solver_selectbox, max_iter=max_iter_slider)
+                    regressor.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = regressor.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = regressor.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test))
+                    # Accuracy score
+                    st.write("Accuracy: ", regressor.score(X_test, y_test))
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                    # Confusion matrix
+                    st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                    # Classification report
+                    classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                    st.dataframe(classification_report_df)
 
-                # Pickle
-                pickle.dump(regressor, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(regressor, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "SVM":
                 st.write("SVM")
@@ -277,8 +307,29 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize SVM Object in Sklearn
+                # Defaults: C=1.0, kernel='rbf', degree=3, gamma='auto', probability=False, tol=0.001, max_iter=-1
+                C_slider = st.slider("Select C", 1, 10, 1)
+                C_slider = float(C_slider)
+
+                kernel_selectbox = st.selectbox("Select kernel", ["linear", "poly", "rbf", "sigmoid"])
+
+                degree_slider = st.slider("Select degree", 1, 10, 1)
+                degree_slider = int(degree_slider)
+
+                gamma_selectbox = st.selectbox("Select gamma", ["auto", "scale"])
+
+                probability_checkbox = st.checkbox("Select probability")
+                probability_checkbox = bool(probability_checkbox)
+
+                tol_slider = st.slider("Select tol", 0.001, 0.01, 0.001)
+                tol_slider = float(tol_slider)
+
+                max_iter_slider = st.slider("Select max iter", 1, 100, 1)
+                max_iter_slider = int(max_iter_slider)
+
                 # Model
-                regressor = SVR()
+                regressor = SVC(C=C_slider, kernel=kernel_selectbox, degree=degree_slider, gamma=gamma_selectbox, probability=probability_checkbox, tol=tol_slider, max_iter=max_iter_slider)
                 regressor.fit(X_train, y_train)
 
                 # Prediction
@@ -288,11 +339,12 @@ def main():
                 # Accuracy
                 st.write("Accuracy: ", regressor.score(X_test, y_test))
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                # Confusion matrix
+                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                # Classification report
+                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                st.dataframe(classification_report_df)
 
                 # Pickle
                 pickle.dump(regressor, open("model.pkl", "wb"))
@@ -313,8 +365,17 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize KNN Object in Sklearn
+                # Defaults: n_neighbors=5, algorithm='auto', metric='minkowski'
+                n_neighbors_slider = st.slider("Select n_neighbors", 1, 10, 1)
+                n_neighbors_slider = int(n_neighbors_slider)
+
+                algorithm_selectbox = st.selectbox("Select algorithm", ["auto", "ball_tree", "kd_tree", "brute"])
+
+                metric_selectbox = st.selectbox("Select metric", ["minkowski", "euclidean", "manhattan"])
+                
                 # Model
-                classifier = KNeighborsClassifier()
+                classifier = KNeighborsClassifier(n_neighbors=n_neighbors_slider, algorithm=algorithm_selectbox, metric=metric_selectbox)
                 classifier.fit(X_train, y_train)
 
                 # Prediction
@@ -324,11 +385,12 @@ def main():
                 # Accuracy
                 st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                # Confusion matrix
+                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                # Classification report
+                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                st.dataframe(classification_report_df)
 
                 # Pickle
                 pickle.dump(classifier, open("model.pkl", "wb"))
@@ -349,8 +411,17 @@ def main():
                 train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
 
+                # Options to customize Decision Tree Classifier Object in Sklearn
+                # Defaults: criterion='gini', splitter='best', max_depth=None
+                criterion_selectbox = st.selectbox("Select criterion", ["gini", "entropy"])
+
+                splitter_selectbox = st.selectbox("Select splitter", ["best", "random"])
+
+                max_depth_slider = st.slider("Select max depth", 1, 10, 1)
+                max_depth_slider = int(max_depth_slider)
+                
                 # Model
-                classifier = DecisionTreeClassifier()
+                classifier = DecisionTreeClassifier(criterion=criterion_selectbox, splitter=splitter_selectbox, max_depth=max_depth_slider)
                 classifier.fit(X_train, y_train)
 
                 # Prediction
@@ -360,11 +431,12 @@ def main():
                 # Accuracy
                 st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                # Confusion matrix
+                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                # Classification report
+                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                st.dataframe(classification_report_df)
 
                 # Pickle
                 pickle.dump(classifier, open("model.pkl", "wb"))
