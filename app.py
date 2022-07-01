@@ -10,13 +10,9 @@ from sklearn.svm import SVC, LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import KFold, StratifiedKFold
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_val_predict
-from sklearn.metrics import r2_score
+from sklearn.cluster import KMeans
+from sklearn.model_selection import train_test_split, KFold, StratifiedKFold, cross_val_score, cross_val_predict
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, silhouette_score, davies_bouldin_score, calinski_harabasz_score, mean_squared_error, r2_score
 import pickle
 
 def main():
@@ -79,7 +75,7 @@ def main():
 
             st.dataframe(df)
 
-            model = st.selectbox("Select model", ["", "Linear Regression", "Decision Tree Regressor", "Random Forest Regressor", "Logistic Regression", "SVM", "KNN", "Decision Tree Classifier", "Random Forest Classifier"])
+            model = st.selectbox("Select model", ["", "Linear Regression", "Decision Tree Regressor", "Random Forest Regressor", "Logistic Regression", "SVM", "KNN", "Decision Tree Classifier", "Random Forest Classifier", "K Means Clustering"])
 
             if model == "Linear Regression":
                 st.write("Linear Regression")
@@ -126,27 +122,29 @@ def main():
 
                 # Model
                 regressor = LinearRegression(fit_intercept=fit_intercept, copy_X=copy_X, n_jobs=n_jobs, positive=positive)
-                regressor.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    regressor.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = regressor.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = regressor.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
+                    # Accuracy
+                    st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                    # MSE
+                    st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
-                # RMSE
-                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+                    # RMSE
+                    st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                    # R2
+                    st.write("R2: ", r2_score(y_test, y_pred))
 
-                # Pickle
-                pickle.dump(regressor, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(regressor, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "Decision Tree Regressor":
                 st.write("Decision Tree Regressor")
@@ -178,27 +176,29 @@ def main():
 
                 # Model
                 regressor = DecisionTreeRegressor(criterion=criterion_selectbox, splitter=splitter_selectbox, max_depth=max_depth_slider, min_samples_split=min_samples_split_slider, min_samples_leaf=min_samples_leaf_slider)
-                regressor.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    regressor.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = regressor.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = regressor.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
+                    # Accuracy
+                    st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                    # MSE
+                    st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
-                # RMSE
-                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+                    # RMSE
+                    st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                    # R2
+                    st.write("R2: ", r2_score(y_test, y_pred))
 
-                # Pickle
-                pickle.dump(regressor, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(regressor, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "Random Forest Regressor":
                 st.write("Random Forest Regressor")
@@ -217,27 +217,29 @@ def main():
 
                 # Model
                 regressor = RandomForestRegressor()
-                regressor.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    regressor.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = regressor.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = regressor.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
+                    # Accuracy
+                    st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
-                # MSE
-                st.write("MSE: ", mean_squared_error(y_test, y_pred))
+                    # MSE
+                    st.write("MSE: ", mean_squared_error(y_test, y_pred))
 
-                # RMSE
-                st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
+                    # RMSE
+                    st.write("RMSE: ", np.sqrt(mean_squared_error(y_test, y_pred)))
 
-                # R2
-                st.write("R2: ", r2_score(y_test, y_pred))
+                    # R2
+                    st.write("R2: ", r2_score(y_test, y_pred))
 
-                # Pickle
-                pickle.dump(regressor, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(regressor, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "Logistic Regression":
                 st.write("Logistic Regression")
@@ -330,25 +332,27 @@ def main():
 
                 # Model
                 regressor = SVC(C=C_slider, kernel=kernel_selectbox, degree=degree_slider, gamma=gamma_selectbox, probability=probability_checkbox, tol=tol_slider, max_iter=max_iter_slider)
-                regressor.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    regressor.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = regressor.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = regressor.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
+                    # Accuracy
+                    st.write("Accuracy: ", regressor.score(X_test, y_test) * 100)
 
-                # Confusion matrix
-                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
+                    # Confusion matrix
+                    st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # Classification report
-                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
-                st.dataframe(classification_report_df)
+                    # Classification report
+                    classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                    st.dataframe(classification_report_df)
 
-                # Pickle
-                pickle.dump(regressor, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(regressor, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "KNN":
                 st.write("KNN")
@@ -376,25 +380,27 @@ def main():
                 
                 # Model
                 classifier = KNeighborsClassifier(n_neighbors=n_neighbors_slider, algorithm=algorithm_selectbox, metric=metric_selectbox)
-                classifier.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    classifier.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = classifier.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = classifier.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", classifier.score(X_test, y_test))
+                    # Accuracy
+                    st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # Confusion matrix
-                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
+                    # Confusion matrix
+                    st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # Classification report
-                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
-                st.dataframe(classification_report_df)
+                    # Classification report
+                    classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                    st.dataframe(classification_report_df)
 
-                # Pickle
-                pickle.dump(classifier, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(classifier, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "Decision Tree Classifier":
                 st.write("Decision Tree Classifier")
@@ -422,25 +428,27 @@ def main():
                 
                 # Model
                 classifier = DecisionTreeClassifier(criterion=criterion_selectbox, splitter=splitter_selectbox, max_depth=max_depth_slider)
-                classifier.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    classifier.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = classifier.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = classifier.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", classifier.score(X_test, y_test))
+                    # Accuracy
+                    st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # Confusion matrix
-                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
+                    # Confusion matrix
+                    st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # Classification report
-                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
-                st.dataframe(classification_report_df)
+                    # Classification report
+                    classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                    st.dataframe(classification_report_df)
 
-                # Pickle
-                pickle.dump(classifier, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(classifier, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
 
             elif model == "Random Forest Classifier":
                 st.write("Random Forest Classifier")
@@ -471,25 +479,80 @@ def main():
                 
                 # Model
                 classifier = RandomForestClassifier(n_estimators=n_estimators_slider, max_features=max_features_selectbox, criterion=criterion_selectbox, max_depth=max_depth_slider)
-                classifier.fit(X_train, y_train)
+                
+                if st.button("Train"):
+                    classifier.fit(X_train, y_train)
 
-                # Prediction
-                y_pred = classifier.predict(X_test)
-                st.write("Prediction: ", y_pred)
+                    # Prediction
+                    y_pred = classifier.predict(X_test)
+                    st.write("Prediction: ", y_pred)
 
-                # Accuracy
-                st.write("Accuracy: ", classifier.score(X_test, y_test))
+                    # Accuracy
+                    st.write("Accuracy: ", classifier.score(X_test, y_test))
 
-                # Confusion matrix
-                st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
+                    # Confusion matrix
+                    st.write("Confusion matrix: ", confusion_matrix(y_test, y_pred))
 
-                # Classification report
-                classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
-                st.dataframe(classification_report_df)
+                    # Classification report
+                    classification_report_df = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True))
+                    st.dataframe(classification_report_df)
 
-                # Pickle
-                pickle.dump(classifier, open("model.pkl", "wb"))
-                st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+                    # Pickle
+                    pickle.dump(classifier, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
+
+            elif model == "K Means Clustering":
+                st.write("K Means Clustering")
+                st.write("This is the page to pickle the model.")
+
+                # Target column
+                target_column = st.selectbox("Select target column", df.columns)
+
+                # Model
+                X = df.drop(target_column, axis=1)
+                y = df[target_column]
+
+                # Train test split slider
+                train_test_split_slider = st.slider("Select train test split", 0.1, 0.9, 0.1)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=train_test_split_slider, random_state=42)
+
+                # Options to customize K Means Clustering Object in Sklearn
+                # Defaults: n_clusters=3, init='k-means++', n_init=10, max_iter=300, algorithm='lloyd'
+                n_clusters_slider = st.slider("Select n_clusters", 1, 10, 1)
+                n_clusters_slider = int(n_clusters_slider)
+
+                init_selectbox = st.selectbox("Select init", ["k-means++", "random"])
+
+                n_init_slider = st.slider("Select n_init", 1, 10, 1)
+                n_init_slider = int(n_init_slider)
+
+                max_iter_slider = st.slider("Select max_iter", 1, 1000, 1)
+                max_iter_slider = int(max_iter_slider)
+
+                algorithm_selectbox = st.selectbox("Select algorithm", ["lloyd", "elkan", "auto", "full"])
+
+                # Model
+                ml = KMeans(n_clusters=n_clusters_slider, init=init_selectbox, n_init=n_init_slider, max_iter=max_iter_slider, algorithm=algorithm_selectbox)
+                
+                if st.button("Train"):
+                    ml.fit(X_train)
+
+                    # Prediction
+                    y_pred = ml.predict(X_test)
+                    st.write("Prediction: ", y_pred)
+
+                    # Silhouette score
+                    st.write("Silhouette score: ", silhouette_score(X_train, ml.labels_))
+
+                    # Calinski-Harabasz score
+                    st.write("Calinski-Harabasz score: ", calinski_harabasz_score(X_train, ml.labels_))
+
+                    # Davies-Bouldin score
+                    st.write("Davies-Bouldin score: ", davies_bouldin_score(X_train, ml.labels_))
+
+                    # Pickle
+                    pickle.dump(ml, open("model.pkl", "wb"))
+                    st.download_button("Download pickled model", data=open("model.pkl", "rb"), file_name="model.pkl")
     
     elif choice == "Cross Validation":
         # 2 fields: One to upload model and one to upload data
