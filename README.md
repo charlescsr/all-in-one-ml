@@ -1,4 +1,4 @@
-# IVD Version a.k.a All in one ML
+# IVD Version 2.0 a.k.a All in one ML
 
 This is an improvement over my previous project which can be found [here](https://github.com/charlescsr/implogn-visintei-datifing)
 
