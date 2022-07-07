@@ -32,7 +32,8 @@ def main():
             df = pd.read_csv(file)
 
             if any(df.columns.str.contains('^Unnamed')):
-                df = pd.read_csv(file, index_col=0)
+                # Remove unnamed columns
+                df.drop(df.columns[df.columns.str.contains('^Unnamed')], axis=1, inplace=True)
 
             st.dataframe(df)
 
@@ -71,7 +72,7 @@ def main():
             df = pd.read_csv(file)
 
             if any(df.columns.str.contains('^Unnamed')):
-                df = pd.read_csv(file, index_col=0)
+                df.drop(df.columns[df.columns.str.contains('^Unnamed')], axis=1, inplace=True)
 
             st.dataframe(df)
 
@@ -571,6 +572,10 @@ def main():
 
         if uploaded_file is not None:
             df = pd.read_csv(uploaded_file)
+            
+            if any(df.columns.str.contains('^Unnamed')):
+                df.drop(df.columns[df.columns.str.contains('^Unnamed')], axis=1, inplace=True)
+            
             st.write(df)
 
             # Target column
